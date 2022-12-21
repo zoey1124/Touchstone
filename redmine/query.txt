@@ -1,0 +1,5 @@
+## query 1.1
+[dwdate]; [0, d_year@=, 0.142801]; [1, d_datekey, 1, 2]
+[lineorder]; [2, lo_orderdate, 0.151352, dwdate.d_datekey, 1, 2]; [0, lo_discount@bet#lo_quantity@<#and, 0.131172]
+
+#  SELECT  1 AS one FROM attachments WHERE (disk_filename = '060719210727_document.txt' AND id <> 2) LIMIT $1
