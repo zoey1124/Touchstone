@@ -1,79 +1,28 @@
+## Filter node: [0, exp1@op1#exp2@op2 ... #and|or, probability]
+## FKJoin node: [2, fk1#fk2 ..., probability, pk1#pk2 ..., num1, num2]
+## PKJoin node: [1, pk1#pk2 ..., num1, num2, ...]
+## num1 is the identifier that can join, num2 is the identifier that can not join
+## Corresponding SQL format queries are in redmine_sql.sql file
+
 ## query 1
-## SELECT  roles.* FROM roles WHERE roles.builtin = $1
 [roles]; [0, builtin@=, 0.9]
 
 ## query 2
-## SELECT  attachments.* FROM attachments WHERE attachments.digest = $1 AND attachments.filesize = $2
 [attachments]; [0, digest@=#filesize@=#and, 0.8]
 
 ## query 3
-## SELECT  auth_sources.* FROM auth_sources WHERE auth_sources.id = $1
-[auth_sources]; [0, id@=, 0.6]
-
-## query 4
-## SELECT 
-##      custom_fields.* 
-## FROM 
-##  	custom_fields 
-## INNER JOIN 
-##      custom_fields_trackers 
-## ON 
-##  	custom_fields.id = custom_fields_trackers.custom_field_id 
-## WHERE 
-##  	custom_fields.type IN ('IssueCustomField') 
-##  	AND custom_fields_trackers.tracker_id = $1
-
+[users]; [0, lastname@=, 0.4]
 
 ## query 5
-SELECT 
-	DISTINCT users.* 
-FROM 
-	users 
-INNER JOIN 
-	email_addresses 
-ON 
-	email_addresses.user_id = users.id 
-WHERE 
-	users.type IN ('User', 'AnonymousUser') 
-	AND (LOWER(email_addresses.address) IN ('jsmith@somenet.foo'))
-ORDER BY 
-	users.id ASC;
-
-// Here we do not have any parameters to fill in
-
-[email_addresses]; [0, type@=, 0.?]; [2, user_id, 0.?, users.id, 1, 2]      // FK
-[users]; [0, address@=, 0.?]; [1, user.id, 1, 2]       // PK
-
+[users]; [1, user.id, 1, 2]  
+[email_addresses]; [2, user_id, 0.3, users.id, 1, 2]         
 
 ## query 6
-SELECT 
-	users.* 
-FROM 
-	users 
-INNER JOIN
-	watchers 
-ON 
-	users.id = watchers.user_id 
-WHERE 
-	watchers.watchable_id = $1 
-	AND watchers.watchable_type = $2 
-	AND users.status = $3
+[users]; [0, status@=, 0.3]; [1, user.id, 4, 8]
+[watchers]; [2, user_id, 0.4, users.id, 4, 8]
 
-## query 7
-SELECT 
-	custom_values.* 
-FROM 
-	custom_values 
-WHERE 
-	custom_values.customized_id = $1 
-	AND custom_values.customized_type = $2
+## query 7 
+[custom_values]; [0, customized_id@=#customized_type@=#and, 0.33]
 
-##[custom_values]; [0, customized_id@=#customized_type@=, 0.33]
-
-## query 8
-SELECT 
-	MAX(custom_field_enumerations.position) 
-FROM 
-	custom_field_enumerations 
-WHERE 
-	custom_field_enumerations.custom_field_id = $1
+## query 8 
+[custom_field_enumerations]; [0, custom_field_id@=, 0.44]
