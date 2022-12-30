@@ -9,20 +9,7 @@ SELECT  auth_sources.* FROM auth_sources WHERE auth_sources.id = $1
 
 q4
 SELECT 
-	custom_fields.* 
-FROM 
-	custom_fields 
-INNER JOIN 
-	custom_fields_trackers 
-ON 
-	custom_fields.id = custom_fields_trackers.custom_field_id 
-WHERE 
-	custom_fields.type IN ('IssueCustomField') 
-	AND custom_fields_trackers.tracker_id = $1
-
-q5 
-SELECT 
-	DISTINCT users.* 
+	count(users.* )
 FROM 
 	users 
 INNER JOIN 
@@ -30,29 +17,26 @@ INNER JOIN
 ON 
 	email_addresses.user_id = users.id 
 WHERE 
-	users.type IN ('User', 'AnonymousUser') 
-	AND (LOWER(email_addresses.address) IN ('jsmith@somenet.foo'))
-ORDER BY 
-	users.id ASC;
+	users.type = $1
+	AND email_addresses.address = $2;
 
-// Here we do not have any parameters to fill in
 
-q6
+q5 
 SELECT 
-	users.* 
+	count(users.* )
 FROM 
 	users 
 INNER JOIN
-	watchers 
+	watchers_copy 
 ON 
-	users.id = watchers.user_id 
+	users.id = watchers_copy.user_id 
 WHERE 
-	watchers.watchable_id = $1 
-	AND watchers.watchable_type = $2 
+	watchers_copy.watchable_type = $1
+	AND watchers_copy.watchable_id = $2
 	AND users.status = $3
 
 
-q7
+q6
 SELECT 
 	custom_values.* 
 FROM 
@@ -62,11 +46,10 @@ WHERE
 	AND custom_values.customized_type = $2
 
 
-q8
+q7
 SELECT 
 	MAX(custom_field_enumerations.position) 
 FROM 
 	custom_field_enumerations 
 WHERE 
 	custom_field_enumerations.custom_field_id = $1
-
