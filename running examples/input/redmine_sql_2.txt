@@ -205,8 +205,9 @@ SELECT DISTINCT issues.created_on, issues.id FROM issues INNER JOIN projects ON 
 [journals]; [0, journalized_type@=, 0.5]; [2, journalized_id, 0.5, issues.id, 1, 2]
 
 q30
-SELECT * FROM issues WHERE is_private = TRUE
-[issues]; [0, is_private@=true, 0.5]
+SELECT  1 AS one FROM users WHERE users.type IN ('User', 'AnonymousUser')
+
+[users]; [0, type@=User#type@=AnonymousUser#or, 0.5]
 
 q31
 SELECT  wiki_redirects.* FROM wiki_redirects WHERE LOWER(title) = LOWER($1) ORDER BY wiki_redirects.id ASC LIMIT $2
